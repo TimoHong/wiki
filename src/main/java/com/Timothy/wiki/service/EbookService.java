@@ -3,8 +3,9 @@ package com.Timothy.wiki.service;
 import com.Timothy.wiki.domain.Ebook;
 import com.Timothy.wiki.domain.EbookExample;
 import com.Timothy.wiki.mapper.EbookMapper;
-import com.Timothy.wiki.req.EbookReq;
-import com.Timothy.wiki.resp.EbookResp;
+import com.Timothy.wiki.req.EbookQueryReq;
+import com.Timothy.wiki.req.EbookSaveReq;
+import com.Timothy.wiki.resp.EbookQueryResp;
 import com.Timothy.wiki.resp.PageResp;
 import com.Timothy.wiki.util.CopyUtil;
 import com.github.pagehelper.PageHelper;
@@ -25,7 +26,7 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public PageResp<EbookResp> list(EbookReq req) {
+    public PageResp<EbookQueryResp> list(EbookQueryReq req) {
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         if (!ObjectUtils.isEmpty(req.getName())) {
@@ -49,12 +50,19 @@ public class EbookService {
         // }
 
         // 列表复制
-        List<EbookResp> list = CopyUtil.copyList(ebookList, EbookResp.class);
+        List<EbookQueryResp> list = CopyUtil.copyList(ebookList, EbookQueryResp.class);
 
-        PageResp<EbookResp> pageResp = new PageResp();
+        PageResp<EbookQueryResp> pageResp = new PageResp();
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(list);
 
         return pageResp;
     }
+    public void save(EbookSaveReq req) {
+        Ebook ebook = CopyUtil.copy(req, Ebook.class);
+        if (ObjectUtils.isEmpty(req.getId())) {
+            ebookMapper.insert(ebook);
+        } else
+            ebookMapper.updateByPrimaryKey(ebook);
+        }
 }
